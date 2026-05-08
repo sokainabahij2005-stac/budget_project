@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier Categorie</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 500px; margin: 50px auto; padding: 0 24px; }
+        .form-box {
+            background: white;
+            padding: 32px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>🔴 Modifier Categorie</strong>
+        <div>
+            <a href="{% url 'admin_categories' %}">← Retour</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-box">
+            <h2>✏️ Modifier "{{ cat.nom }}"</h2>
+            <form method="post">
+                {% csrf_token %}
+                <label>Nouveau nom</label>
+                <input type="text" name="nom" value="{{ cat.nom }}" required>
+                <button type="submit" class="btn">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

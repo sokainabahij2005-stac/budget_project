@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Budget App</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 24px; }
+        
+        /* Cartes du mois actuel */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .card h3 { color: #888; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }
+        .card .value { font-size: 32px; font-weight: bold; }
+        .card.revenus .value { color: #28a745; }
+        .card.depenses .value { color: #dc3545; }
+        .card.solde .value { color: #007bff; }
+        .card .mois { color: #aaa; font-size: 12px; margin-top: 5px; }
+
+        /* Alertes */
+        .alerte {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .alerte.vert { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alerte.orange { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .alerte.rouge { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Graphiques */
+        .charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .chart-box {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .chart-box h3 { margin-bottom: 20px; color: #333; }
+
+        /* Boutons */
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-success { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>💰 Mon Budget</strong>
+        <div>
+            <span style="margin-right: 20px;">{{ utilisateur.username }}</span>
+            <a href="{% url 'chatbot' %}">🤖 Chatbot</a>
+            <a href="{% url 'deconnexion' %}">Deconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Alertes -->
+        {% for alerte in alertes %}
+        <div class="alerte {{ alerte.niveau }}">
+            {{ alerte.message }}
+        </div>
+        {% endfor %}
+
+        <!-- Actions -->
+        <div class="actions">
+            <a href="{% url 'ajouter_transaction' %}" class="btn btn-primary">+ Ajouter Transaction</a>
+            <a href="{% url 'chatbot' %}" class="btn btn-success">🤖 Chatbot</a>
+        </div>
+
+        <!-- Cartes du MOIS ACTUEL -->
+        <div class="cards">
+            <div class="card revenus">
+                <h3>Revenus du Mois</h3>
+                <div class="value">{{ total_revenus_mois|floatformat:2 }} MAD</div>
+                <div class="mois">{{ now|date:"F Y" }}</div>
+            </div>
+            <div class="card depenses">
+                <h3>Dépenses du Mois</h3>
+                <div class="value">{{ total_depenses_mois|floatformat:2 }} MAD</div>
+                <div class="mois">{{ now|date:"F Y" }}</div>
+            </div>
+            <div class="card solde">
+                <h3>Solde du Mois</h3>
+                <div class="value">{{ solde_mois|floatformat:2 }} MAD</div>
+                <div class="mois">{{ now|date:"F Y" }}</div>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div class="charts">
+            <div class="chart-box">
+                <h3>📈 Dépenses Mensuelles ({{ now.year }})</h3>
+                <canvas id="courbeChart"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>📊 Dépenses par Catégorie ({{ now.year }})</h3>
+                <canvas id="camembertChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Courbe mensuelle
+        const ctxCourbe = document.getElementById('courbeChart').getContext('2d');
+        new Chart(ctxCourbe, {
+            type: 'line',
+            data: {
+                labels: ['Jan','Fev','Mar','Avr','Mai','Juin','Juil','Aout','Sept','Oct','Nov','Dec'],
+                datasets: [{
+                    label: 'Dépenses (MAD)',
+                    data: {{ depenses_par_mois|safe }},
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220,53,69,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Camembert
+        const ctxCamembert = document.getElementById('camembertChart').getContext('2d');
+        new Chart(ctxCamembert, {
+            type: 'doughnut',
+            data: {
+                labels: [{% for d in depenses_categorie %}'{{ d.categorie__nom|default:"Sans catégorie" }}',{% endfor %}],
+                datasets: [{
+                    data: [{% for d in depenses_categorie %}{{ d.total }},{% endfor %}],
+                    backgroundColor: ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#00f2fe']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+</body>
+</html>

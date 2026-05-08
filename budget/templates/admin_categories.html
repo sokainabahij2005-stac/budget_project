@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion Categories</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 800px; margin: 30px auto; padding: 0 24px; }
+        .add-form {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .add-form input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        .btn-add {
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #dc3545; color: white; }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .btn-edit { background: #007bff; }
+        .btn-delete { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>🔴 Gestion des Categories</strong>
+        <div>
+            <a href="{% url 'admin_dashboard' %}">← Dashboard</a>
+            <a href="{% url 'deconnexion' %}">Deconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="add-form">
+            <h3>➕ Ajouter une categorie</h3>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="ajouter">
+                <input type="text" name="nom" placeholder="Nom de la categorie" required>
+                <button type="submit" class="btn-add">Ajouter</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in categories %}
+                <tr>
+                    <td>{{ c.id }}</td>
+                    <td>{{ c.nom }}</td>
+                    <td>
+                        <a href="{% url 'admin_modifier_categorie' c.id %}" class="btn btn-edit">✏️ Modifier</a>
+                        <form method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="supprimer">
+                            <input type="hidden" name="cat_id" value="{{ c.id }}">
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('Supprimer ?')">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

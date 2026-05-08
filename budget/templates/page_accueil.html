@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>💰 Budget Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            color: white;
+        }
+        h1 { font-size: 56px; margin-bottom: 20px; }
+        p { font-size: 22px; margin-bottom: 40px; opacity: 0.9; }
+        .btn {
+            display: inline-block;
+            padding: 20px 70px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        .features {
+            display: flex;
+            gap: 30px;
+            margin-top: 60px;
+            justify-content: center;
+        }
+        .feature {
+            background: rgba(255,255,255,0.15);
+            padding: 30px;
+            border-radius: 15px;
+            width: 220px;
+        }
+        .feature-icon { font-size: 45px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Budget Manager</h1>
+        <p>Gérez vos finances personnelles intelligemment</p>
+        <a href="{% url 'accueil' %}" class="btn">🚀 Accéder</a>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Tableau de bord</h3>
+                <p>Suivez vos finances</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <h3>Chatbot IA</h3>
+                <p>Assistant intelligent</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🚨</div>
+                <h3>Alertes</h3>
+                <p>Restez informé</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

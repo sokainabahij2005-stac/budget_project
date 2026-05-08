@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter Transaction</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 500px; margin: 40px auto; padding: 0 24px; }
+        .form-box {
+            background: white;
+            padding: 32px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h2 { margin-bottom: 25px; color: #333; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .back { text-align: center; margin-top: 20px; }
+        .back a { color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>💰 Budget App</strong>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'deconnexion' %}">Deconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-box">
+            <h2>➕ Ajouter une Transaction</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Montant (MAD)</label>
+                    <input type="number" name="montant" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="type" required>
+                        <option value="revenu">Revenu</option>
+                        <option value="depense">Depense</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Categorie</label>
+                    <select name="categorie">
+                        <option value="">-- Choisir --</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn">Ajouter</button>
+            </form>
+            <div class="back">
+                <a href="{% url 'dashboard' %}">← Retour au dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

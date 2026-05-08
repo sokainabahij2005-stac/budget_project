@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion Utilisateurs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 24px; }
+        h2 { margin-bottom: 30px; color: #333; }
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .user-card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .user-card h3 { margin-bottom: 10px; color: #333; }
+        .user-card p { color: #888; margin-bottom: 8px; }
+        .user-card .budget { color: #28a745; font-weight: bold; }
+        .btn-delete {
+            width: 100%;
+            padding: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .btn-delete:hover { background: #c82333; }
+        .admin-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #ffc107;
+            color: #333;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>🔴 Gestion des Utilisateurs</strong>
+        <div>
+            <a href="{% url 'admin_dashboard' %}">← Dashboard</a>
+            <a href="{% url 'deconnexion' %}">Deconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>👥 Utilisateurs</h2>
+        <div class="users-grid">
+            {% for u in users %}
+            <div class="user-card">
+                {% if u.username == 'admin' %}
+                <span class="admin-badge">ADMIN</span>
+                {% endif %}
+                <h3>{{ u.username }}</h3>
+                <p>📧 {{ u.email }}</p>
+                <p class="budget">💰 Budget: {{ u.budgetMensuel|floatformat:2 }} MAD</p>
+                
+                {% if u.username != 'admin' %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ u.id }}">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Supprimer {{ u.username }} ?')">
+                        🗑️ Supprimer
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot - Budget</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 700px; margin: 30px auto; padding: 0 24px; }
+        .chat-box {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .msg {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            white-space: pre-line;
+        }
+        .msg.user { background: #667eea; color: white; margin-left: auto; }
+        .msg.bot  { background: #f0f0f0; color: #333; }
+
+        .input-area { display: flex; gap: 10px; margin-top: 15px; }
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+        .btn-send {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* Groupes de suggestions */
+        .suggestions-section { margin-top: 20px; }
+        .suggestions-section h4 {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .suggestions-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .suggestion {
+            padding: 8px 16px;
+            background: #e8eaf6;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .suggestion:hover { background: #667eea; color: white; }
+        .suggestion.green  { background: #e8f5e9; }
+        .suggestion.green:hover  { background: #28a745; color: white; }
+        .suggestion.red    { background: #fdecea; }
+        .suggestion.red:hover    { background: #dc3545; color: white; }
+        .suggestion.yellow { background: #fff8e1; }
+        .suggestion.yellow:hover { background: #ffc107; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>🤖 Chatbot Budget</strong>
+        <div>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'deconnexion' %}">Deconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="chat-box" id="chatBox">
+            <div class="msg bot">👋 Bonjour ! Choisissez une option ou posez votre question :</div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="messageInput"
+                   placeholder="Ex: solde, conseil..."
+                   onkeypress="if(event.key==='Enter') envoyer()">
+            <button class="btn-send" onclick="envoyer()">Envoyer</button>
+        </div>
+
+        <!-- Boutons groupés -->
+        <div class="suggestions-section">
+            <h4>💰 Revenus</h4>
+            <div class="suggestions-row">
+                <button class="suggestion green" onclick="envoyerSuggestion('Revenus ce mois')">📅 Revenus ce mois</button>
+                <button class="suggestion green" onclick="envoyerSuggestion('Revenus par categorie')">📁 Revenus par catégorie</button>
+            </div>
+
+            <h4>💸 Dépenses</h4>
+            <div class="suggestions-row">
+                <button class="suggestion red" onclick="envoyerSuggestion('Depenses ce mois')">📅 Dépenses ce mois</button>
+                <button class="suggestion red" onclick="envoyerSuggestion('Depenses par categorie')">📁 Dépenses par catégorie</button>
+            </div>
+
+            <h4>📊 Autres</h4>
+            <div class="suggestions-row">
+                <button class="suggestion" onclick="envoyerSuggestion('solde')">📊 Solde</button>
+                <button class="suggestion yellow" onclick="envoyerSuggestion('conseil')">💡 Conseil</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+function ajouterMessage(texte, estUser) {
+    const box = document.getElementById('chatBox');
+    const div = document.createElement('div');
+    div.className = 'msg ' + (estUser ? 'user' : 'bot');
+    div.textContent = texte;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function envoyerSuggestion(texte) {
+    document.getElementById('messageInput').value = texte;
+    envoyer();
+}
+
+async function envoyer() {
+    const input = document.getElementById('messageInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    ajouterMessage(msg, true);
+    input.value = '';
+
+    try {
+        const rep = await fetch('/api/chatbot/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await rep.json();
+        ajouterMessage(data.reponse, false);
+    } catch(e) {
+        ajouterMessage('Erreur de connexion', false);
+    }
+}
+
+function getCookie(name) {
+    let c = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return c ? c[2] : '';
+}
+</script>
+</body>
+</html>

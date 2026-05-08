@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; }
+        .navbar {
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .container { max-width: 1000px; margin: 50px auto; padding: 0 24px; }
+        h1 { text-align: center; margin-bottom: 40px; color: #333; }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #333;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .card .icon { font-size: 50px; margin-bottom: 20px; }
+        .card h3 { font-size: 22px; margin-bottom: 10px; }
+        .card p { color: #888; }
+        .card.users { border-top: 5px solid #007bff; }
+        .card.categories { border-top: 5px solid #28a745; }
+        .card.stats { border-top: 5px solid #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <strong>🔴 ADMINISTRATEUR</strong>
+        <div>
+            <span style="margin-right: 20px;">{{ request.session.utilisateur_nom }}</span>
+            <a href="{% url 'deconnexion' %}">Deconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Tableau de Bord Administrateur</h1>
+        <div class="cards">
+            <a href="{% url 'admin_utilisateurs' %}" class="card users">
+                <div class="icon">👥</div>
+                <h3>Gerer Utilisateurs</h3>
+                <p>{{ nb_users }} utilisateurs inscrits</p>
+            </a>
+            <a href="{% url 'admin_categories' %}" class="card categories">
+                <div class="icon">📁</div>
+                <h3>Gerer Categories</h3>
+                <p>{{ nb_categories }} categories</p>
+            </a>
+            <a href="{% url 'admin_statistiques' %}" class="card stats">
+                <div class="icon">📊</div>
+                <h3>Statistiques Globales</h3>
+                <p>{{ nb_transactions }} transactions</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
