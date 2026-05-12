@@ -386,9 +386,9 @@ def api_chatbot(request):
     return JsonResponse({
         'reponse': "Je n'ai pas compris. Demandez parmi les options ci-dessous :\n\n"
                    "💰 Revenus ce mois\n"
-                   "📊 Revenus par catégorie\n"
-                   "💸 Dépenses ce mois\n"
-                   "📈 Dépenses par catégorie\n"
+                   "📊 Revenus par categorie\n"
+                   "💸 Depenses ce mois\n"
+                   "📈 Depenses par categorie\n"
                    "🏦 Solde\n"
                    "💡 Conseil"
     })
